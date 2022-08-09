@@ -1,0 +1,11 @@
+APPLICATION = test-soniclib
+BOARD ?= lora3a-h10
+RIOTBASE ?= $(CURDIR)/../RIOT
+LORA3ABASE ?= $(CURDIR)/../lora3a-boards
+EXTERNAL_BOARD_DIRS=$(LORA3ABASE)/boards
+EXTERNAL_MODULE_DIRS=$(LORA3ABASE)/modules
+EXTERNAL_PKG_DIRS=$(LORA3ABASE)/pkg
+
+USEPKG += soniclib
+
+include $(RIOTBASE)/Makefile.include
