@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "soniclib.h"
 #include "chirp_bsp.h"
+#include "periph/i2c.h"
 
-#define	 CHIRP_SENSOR_FW_INIT_FUNC	ch201_gprstr_init			/* standard STR firmware */
-// #define	 CHIRP_SENSOR_FW_INIT_FUNC	ch201_gprstr_wd_init	/* watchdog-enabled STR firmware */
+#define CHIRP_SENSOR_FW_INIT_FUNC	ch201_gprstr_init			/* standard STR firmware */
+//#define	CHIRP_SENSOR_FW_INIT_FUNC	ch201_gprstr_wd_init	/* watchdog-enabled STR firmware */
 #define CHIRP_SENSOR_MODE		CH_MODE_FREERUN
 #define CHIRP_SENSOR_TARGET_INT		CH_TGT_INT_FILTER_ANY
 #define CHIRP_SENSOR_TARGET_INT_HIST	5		// num of previous results kept in history
@@ -50,15 +51,39 @@ int main(void)
 	printf("    SonicLib version: %u.%u.%u\n", SONICLIB_VER_MAJOR, SONICLIB_VER_MINOR, SONICLIB_VER_REV);
 	printf("\n");
 
+    printf("Initializing sensor(s)...\n");
     num_ports = ch_get_num_ports(grp_ptr);
-
-    printf("Initializing sensor(s)... ");
-
     for (dev_num = 0; dev_num < num_ports; dev_num++) {
         ch_dev_t *dev_ptr = &(chirp_devices[dev_num]);
         chirp_error |= ch_init(dev_ptr, grp_ptr, dev_num, CHIRP_SENSOR_FW_INIT_FUNC);
     }
 
+    if (chirp_error == 0) {
+        printf("starting group...\n");
+        chirp_error = ch_group_start(grp_ptr);
+    }
+
+    if (chirp_error == 0) {
+        printf("OK\n");
+    } else {
+        printf("FAILED: %d\n", chirp_error);
+    }
+    printf("\n");
+
+    printf("Sensor\tType \t  Freq   \t  B/W  \t RTC Cal\tFirmware\n");
+    for (dev_num = 0; dev_num < num_ports; dev_num++) {
+        ch_dev_t *dev_ptr = ch_get_dev_ptr(grp_ptr, dev_num);
+        if (ch_sensor_is_connected(dev_ptr)) {
+            printf("%d\tCH%d\t%u Hz\t%u Hz\t%u@%ums\t%s\n", dev_num,
+                                            ch_get_part_number(dev_ptr),
+                                            (unsigned int) ch_get_frequency(dev_ptr),
+                                            (unsigned int) ch_get_bandwidth(dev_ptr),
+                                            ch_get_rtc_cal_result(dev_ptr),
+                                            ch_get_rtc_cal_pulselength(dev_ptr),
+                                            ch_get_fw_version_string(dev_ptr));
+        }
+    }
+    printf("\n");
 
     return 0;
 }
