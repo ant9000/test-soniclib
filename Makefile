@@ -12,6 +12,6 @@ PORT ?= /dev/ttyUSB0
 USEMODULE += saul_default
 USEPKG += soniclib
 
-CFLAGS += -DCHDRV_DEBUG=1
+#CFLAGS += -DCHDRV_DEBUG=1
 
 include $(RIOTBASE)/Makefile.include
