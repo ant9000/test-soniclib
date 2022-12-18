@@ -3,7 +3,7 @@
 #include "chirp_bsp.h"
 #include "periph/i2c.h"
 
-#include "debug_saml21.h"
+#include "saml21_cpu_debug.h"
 #include "MedianFilter.h"
 #include "ultrasound_display_config_info.h"
 
@@ -336,7 +336,7 @@ int main(void)
         if (taskflags==0) {
             chbsp_proc_sleep();         // put processor in low-power sleep mode
             /* We only continue here after an interrupt wakes the processor */
-            debug_saml21();
+            saml21_cpu_debug();
         }
         if (taskflags & DATA_READY_FLAG) {
             /* Sensor has interrupted - handle sensor data */

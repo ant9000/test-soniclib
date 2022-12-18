@@ -9,7 +9,7 @@ DEVELHELP ?= 1
 QUIET ?= 1
 PORT ?= /dev/ttyUSB0
 
-USEMODULE += debug_saml21
+USEMODULE += saml21_cpu_debug
 USEMODULE += printf_float
 USEMODULE += saul_default
 USEPKG += soniclib
